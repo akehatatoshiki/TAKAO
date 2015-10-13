@@ -21,7 +21,6 @@
 static int IS_INITED = 0;
 static int IS_LOG_INITED = 0;
 static const char *hashpath = "PersistenceHash";
-int ref_referent_offset = -1;
 
 static inline long
 rdtsc() {

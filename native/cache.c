@@ -16,7 +16,7 @@
    structures), marking falls back to a slower heap scan */
 #define MARK_STACK_SIZE 16384
 static int mark_stack_count = 0;
-static Object *mark_stack[MARK_STACK_SIZE];
+static Object **mark_stack;
 
 /* Macros for manipulating the mark bit array */
 
@@ -25,7 +25,7 @@ static Object *mark_stack[MARK_STACK_SIZE];
 static int HASH(ptr){
   int hash =  ((uintptr_t)ptr^8677) % MARK_STACK_SIZE;
   while(mark_stack_count < MARK_STACK_SIZE){
-    if(!mark_stack[hash] || ptr == mark_stack[hash]){
+    if(!mark_stack[hash] || (uintptr_t)ptr == (uintptr_t)mark_stack[hash]){
       break;
     }else{
       hash = REHASH(hash);
@@ -42,6 +42,7 @@ static int HASH(ptr){
 
 #define UNMARK(ptr)        mark_stack[HASH(ptr)] = (void *)"UNMARKED";
 
+int ref_referent_offset = -1;
 
 /* Function for handle cache */
 
@@ -54,6 +55,8 @@ static inline void
 clflush(volatile void *p){
   asm volatile("clflush (%0)" :: "r" (p));
 }
+
+void markClassData(Class *class);
 
 void clflush_cache_range(void *ptr){
   md();
@@ -257,7 +260,7 @@ void doflush(Object *ob) {
 }
 
 void flush(Object* ob){
-    mark_stack = (Object *)malloc(sizeof(Object) * MARK_STACK_SIZE);
+    mark_stack = (Object **)malloc(sizeof(Object) * MARK_STACK_SIZE);
     if(mark_stack == NULL) perror("In flush\n");return;
     doFlushMark(ob);
     doFlush(ob);

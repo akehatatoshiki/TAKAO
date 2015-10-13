@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <time.h>
+#include <jni.h>
 
 #define VMTHREAD     512
 #define VMTHROWABLE 1024
@@ -77,6 +78,8 @@
 #define CLASS_LOADER           64
 #define CLASS_CLASH           128
 #define ANONYMOUS             256
+
+#define ACC_STATIC              0x0008
 
 typedef unsigned char          u1;
 typedef unsigned short         u2;
@@ -429,7 +432,7 @@ typedef struct prop {
 
 /* Test mode */
 
-extern static int testing_mode = 0;
+extern int testing_mode;
 
 /* Function for handle file */
 
@@ -437,12 +440,12 @@ extern int initFiles(int fd,long size);
 
 /* RDTSC */
 
-extern static inline long rdtsc();
+extern inline long rdtsc();
 
 /* Function for handle cache */
 
 extern void flush(Object *ptr);
-extern void clflush_cache_range(Object *ptr);
+extern void clflush_cache_range(void *ptr);
 
 /* Function for CCSTM */
 

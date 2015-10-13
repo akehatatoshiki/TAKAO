@@ -11,6 +11,10 @@ public class TAKAONative{
   public native int isPersistence(String name);
   /* Method for cache */
   public native void clflush(Object ptr);
+  /* Method for ccstm */
+  public native void init_log();
+  public native void push_log(Object handle,Object val);
+  public native void flush_and_delete();
 
   /* Method for testing */
   public native void printObjectaddres(Object tgt);
